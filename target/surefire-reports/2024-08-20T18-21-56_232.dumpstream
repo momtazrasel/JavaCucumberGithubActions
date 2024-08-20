@@ -1,0 +1,5 @@
+# Created at 2024-08-20T18:21:56.607
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Fiverr\Nifty_IT_Solution\Denowatts\Denowatts\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
