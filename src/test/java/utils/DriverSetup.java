@@ -35,7 +35,7 @@ public class DriverSetup {
                     options.addArguments("--disable-gpu");
                     options.addArguments("--window-size=1920,1080");
                 }
-                System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/src/test/resources/chromedriver.exe");
+                System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/home/runner/work/JavaCucumberGithubActions/JavaCucumberGithubActions/src/test/resources/chromedriver.exe");
                 driver = new ChromeDriver(options);
             }
             else if (browser.equalsIgnoreCase("firefox")) {
