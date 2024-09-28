@@ -9,6 +9,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Properties;
 
 public class DriverSetup {
@@ -50,6 +51,8 @@ public class DriverSetup {
 
                 // Initialize ChromeDriver with options
                 driver = new ChromeDriver(chromeOptions);
+                driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(60));  // Page load timeout
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
             }
             // Other browser setups (e.g., Firefox) can go here
 
