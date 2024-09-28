@@ -36,7 +36,12 @@ public class DriverSetup {
                 // Setup ChromeOptions
                 ChromeOptions chromeOptions = new ChromeOptions();
                 if (isHeadless) {
-                    chromeOptions.addArguments("--headless", "--disable-gpu", "--window-size=1920,1080");
+                    chromeOptions.addArguments("--headless");
+                    chromeOptions.addArguments("--no-sandbox");  // This disables the sandbox for CI
+                    chromeOptions.addArguments("--disable-dev-shm-usage");  // This resolves potential memory issues in containers
+                    chromeOptions.addArguments("--disable-gpu");  // Often needed in headless mode
+                    chromeOptions.addArguments("--window-size=1920,1080");  // Optional, depending on test requirements
+
                 }
                 chromeOptions.addArguments("--remote-allow-origins=*");
 
