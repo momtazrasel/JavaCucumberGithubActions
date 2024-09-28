@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Denowatts" />
         <module name="demoShop24_Java_Cucumber" />
+        <module name="JavaCucumberGithubActions" />
         <module name="BracuERP_Java_Cucumber" />
         <module name="Inductive_Health_BDD" />
       </profile>
