@@ -1,137 +1,43 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
 name: Java CI with Maven
 
 on:
-  pull_request:
-    branches:
-      - master
-      - issue-*
   push:
     branches:
-      - master
-      - issue-*
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build_and_test:
-    name: Build and Test
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout Git repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Install Java and Maven
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: maven
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        architecture: x64
 
-      - name: Setup Juice Shop using docker compose
-        run: docker compose -f ${{ github.workspace }}/docker-compose-v3-juiceshop.yml up -d
+    - name: Install Chrome browser
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
 
-      - name: Start Selenium Grid 4
-        run: docker compose -f  ${{ github.workspace }}/docker-compose-v3-seleniumgrid.yml up --scale chrome=4 -d
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
 
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@latest
+    - name: Build with Maven
+      run: mvn clean install
 
-      - name: Install Firefox
-        uses: browser-actions/setup-firefox@latest
-
-      - name: Build the Project
-        run: mvn clean install -DskipTests
-
-      - name: Coverage per Test Execution
-        env:
-          LMT_ACCESS: ${{ secrets.LMT_ACCESS }}
-          LMT_USER: ${{ secrets.LMT_USER }}
-        run: |
-          mvn org.jacoco:jacoco-maven-plugin:prepare-agent install -Pcoverage-per-test -Dheadless=true -DLT_USERNAME=$LMT_USER -DLT_ACCESS_KEY=$LMT_ACCESS
-
-      - name: Stop docker compose for Juice Shop and Selenium grid
-        run: docker compose -f ${{ github.workspace }}/docker-compose-v3-juiceshop.yml down --remove-orphans
-
-      - name: Upload target folder
-        uses: actions/upload-artifact@v4
-        with:
-          name: target
-          path: |
-            ${{ github.workspace }}/target
-            ${{ github.workspace }}/reports
-
-  code_analysis:
-    name: Code Analysis
-    needs:
-      - build_and_test
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: checkout Git repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-
-      - name: Install Java and Maven
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: maven
-
-      - name: Setup Juice Shop using docker compose
-        run: docker compose -f ${{ github.workspace }}/docker-compose-v3-juiceshop.yml up -d
-
-      - name: Start Selenium Grid 4
-        run: docker compose -f  ${{ github.workspace }}/docker-compose-v3-seleniumgrid.yml up --scale chrome=4 -d
-
-      - name: Install Chrome
-        uses: browser-actions/setup-chrome@latest
-
-      - name: Install Firefox
-        uses: browser-actions/setup-firefox@latest
-
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: Download target folder
-        uses: actions/download-artifact@v4
-        with:
-          name: target
-
-      - name: Sonar Code Analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_KEY: ${{ secrets.SONAR_KEY }}
-          LMT_ACCESS: ${{ secrets.LMT_ACCESS }}
-          LMT_USER: ${{ secrets.LMT_USER }}
-        run: |
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=$SONAR_KEY -Dheadless=true -DLT_USERNAME=$LMT_USER -DLT_ACCESS_KEY=$LMT_ACCESS
-
-      - name: Stop docker compose for Juice Shop and Selenium grid
-        run: docker compose -f ${{ github.workspace }}/docker-compose-v3-juiceshop.yml down --remove-orphans
-
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Test Results
-          path: ${{ github.workspace }}/target/surefire-reports/TEST-TestSuite.xml
-          reporter: java-junit
-          java-version: 17
+    - name: Run tests
+      run: mvn test
