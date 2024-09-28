@@ -23,6 +23,11 @@ jobs:
         distribution: 'temurin'
         architecture: x64
 
+    - name: Install Chrome browser
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable
+
     - name: Cache Maven packages
       uses: actions/cache@v3
       with:
@@ -30,24 +35,6 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-
-    - name: Install Chrome browser
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-
-    - name: Get Chrome version and set up ChromeDriver
-      run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1)  # Get major version of Chrome
-        echo "Chrome version: $CHROME_VERSION"  # Debugging
-        DRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)  # Get the matching ChromeDriver version
-        echo "ChromeDriver version: $DRIVER_VERSION"  # Debugging
-        curl -sS -o /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip
-        sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
-
-    - name: Verify ChromeDriver Installation
-      run: chromedriver --version
 
     - name: Build with Maven
       run: mvn clean install
