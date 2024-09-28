@@ -38,7 +38,24 @@ public class DriverSetup {
                 if (isHeadless) {
                     chromeOptions.addArguments("--headless", "--disable-gpu", "--window-size=1920,1080");
                 }
+<<<<<<< HEAD
                 chromeOptions.addArguments("--remote-allow-origins=*");
+=======
+                System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/home/runner/work/JavaCucumberGithubActions/JavaCucumberGithubActions/src/test/resources/chromedriver.exe");
+                driver = new ChromeDriver(options);
+            }
+            else if (browser.equalsIgnoreCase("firefox")) {
+                FirefoxOptions options = new FirefoxOptions();
+                if (isHeadless) {
+                    options.addArguments("--headless");
+                }
+                System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir") + "/src/test/resources/geckodriver.exe");
+                driver = new FirefoxDriver(options);
+            }
+            else {
+                throw new IllegalArgumentException("Unsupported browser: " + browser);
+            }
+>>>>>>> ce45880d873869d089e5de59a9db5cbb1cbe1f1a
 
                 // Automatically manage ChromeDriver version using WebDriverManager
                 WebDriverManager.chromedriver().setup();
