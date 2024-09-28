@@ -8,15 +8,15 @@ import org.testng.annotations.Test;
 @Test
 @CucumberOptions(features = "src/test/java/features", glue = "stepDefinitions",
         monochrome = true,
-        tags = "@Demo"
-//        plugin = {"pretty",
-//                "html:results/cucumber.html",
-//                "json:results/cucumber.json"}
+        tags = "@Demo",
+        plugin = {"pretty",
+                "html:results/cucumber.html",
+                "json:results/cucumber.json"}
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
-//    @Override
-//    @DataProvider(parallel = true)
-//    public Object[][] scenarios() {
-//        return super.scenarios();
-//    }
+    @Override
+    @DataProvider(parallel = true)
+    public Object[][] scenarios() {
+        return super.scenarios();
+    }
 }
