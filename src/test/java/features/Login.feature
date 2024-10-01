@@ -5,4 +5,3 @@ Feature: Test login functionality
     When User enter valid username and password in login form
     And Clicks on Log in button
     Then Verify that the home page is displayed
-
