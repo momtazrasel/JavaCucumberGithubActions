@@ -32,8 +32,8 @@ jobs:
           ${{ runner.os }}-maven-
 
     # Install dependencies and run tests
-    - name: Build with Maven
-      run: mvn clean install
+   # - name: Build with Maven
+   #   run: mvn clean install
 
     # Run tests in headless mode
     - name: Run tests
